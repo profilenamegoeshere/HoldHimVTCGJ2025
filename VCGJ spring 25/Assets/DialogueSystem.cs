@@ -13,8 +13,10 @@ public class DialogueSystem : MonoBehaviour
     public TextMeshProUGUI dialogueTextGUI;
     public TextMeshProUGUI dialogueTimerGUI;
     public TextMeshProUGUI dialogueIterGUI;
+    public TextMeshProUGUI whichOptionChosen;
     public Boolean isChoosing;
     public float timer;
+    public float timerSpeed;
 
     // Start is called before the first frame update
     void Start()
@@ -29,15 +31,16 @@ public class DialogueSystem : MonoBehaviour
     {
         if (isChoosing)
         {
-            if (Input.GetKey(KeyCode.Space))
+            if ((Input.GetKey(KeyCode.Space)||timer<=1)&&timer<4)
             {
                 timer += Time.deltaTime;
             }
-            else
+            else if (timer > 1)
             {
                 beginningDialogueIter += (int)Mathf.Floor(timer);
                 timer = 0;
                 isChoosing = false;
+                whichOptionChosen.SetText("Option #" + (beginningDialogueIter - 3));
             }
         }
 
