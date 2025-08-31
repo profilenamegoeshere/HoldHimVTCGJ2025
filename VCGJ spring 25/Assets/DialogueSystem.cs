@@ -33,7 +33,8 @@ public class DialogueSystem : MonoBehaviour
         {
             if ((Input.GetKey(KeyCode.Space)||timer<=1)&&timer<4)
             {
-                timer += Time.deltaTime;
+                timer += (Time.deltaTime)/2;
+                dialogueTextGUI.SetText("option #"+((int)Mathf.Floor(timer)));
             }
             else if (timer > 1)
             {
@@ -62,7 +63,7 @@ public class DialogueSystem : MonoBehaviour
 
     void updateScreen()
     {
-        dialogueTextGUI.SetText(timer.ToString());
+        dialogueTimerGUI.SetText(timer.ToString());
         dialogueIterGUI.SetText(beginningDialogueIter.ToString());
     }
 }
