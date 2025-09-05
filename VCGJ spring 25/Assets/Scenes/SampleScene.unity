@@ -371,7 +371,7 @@ GameObject:
   - component: {fileID: 498344599}
   - component: {fileID: 498344598}
   m_Layer: 0
-  m_Name: Which Option Chosen
+  m_Name: Branch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1104,14 +1104,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 552f4ee0396d3004cbf573d0a8e358af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  beginningDialogueIter: 0
   dialogueTextGUI: {fileID: 865325414}
   dialogueTimerGUI: {fileID: 1757496530}
   dialogueIterGUI: {fileID: 1435558841}
-  whichOptionChosen: {fileID: 498344598}
-  isChoosing: 0
+  branchGUI: {fileID: 498344598}
   timer: 0
   timerSpeed: 0
+  dataPlayer1: {fileID: 4900000, guid: 04281737961f9344d984512ae75f77f4, type: 3}
+  dataTopazRes1: {fileID: 4900000, guid: 0b4202d162f7d5b44954218eefad8400, type: 3}
+  dataTopaz2: {fileID: 4900000, guid: 73b8df1611f4ed240a6f0d95bf77c7ed, type: 3}
+  dataPlayer2: {fileID: 4900000, guid: bb329ef057a662d4e958153f4fe10552, type: 3}
+  dataTopazRes21: {fileID: 4900000, guid: 3c1e1710adae7c34bb29732f6d642eac, type: 3}
+  dataTopazRes22: {fileID: 4900000, guid: 06b5dd344180852439d16115743d25a4, type: 3}
+  dataTopazRes23: {fileID: 4900000, guid: f50a3840614bb304b81fcd458057784f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
