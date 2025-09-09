@@ -2,3 +2,4 @@ Ah
 Welcome back
 Oh come on don’t gimme that look we both know the drill
 Knowing you I’m just curious how long until you use an actual drill to get into my head
+Press and hold space to start selecting. Let go of space to choose displayed dialogue choice.
