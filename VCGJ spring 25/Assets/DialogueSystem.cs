@@ -18,6 +18,7 @@ public enum Branch
     Topaz2,
     Player2,
     PreChoice2,
+    Tutorial2,
     TopazRes21,
     TopazRes22,
     TopazRes23
@@ -25,11 +26,11 @@ public enum Branch
 
 /*
  * TODO
- * Other function builds array of dialogue lines ahead of it while update and 
- * update display just use that array and handle button pressing and calling
- * the other function
+ * Add voices lines
  * 
- * Figure out file parsing
+ * Add some images
+ * 
+ * Add a title screen (I think that would be a different scene?)
  */
 
 
@@ -71,16 +72,16 @@ public class DialogueSystem : MonoBehaviour
         }
         displayIter = 0;
 
-        linesTopaz1 = Resources.Load<TextAsset>("Topaz 1").text.Split('\n');
-        linesPlayer1 = Resources.Load<TextAsset>("Player 1").text.Split('\n');
-        linesTopazRes11 = Resources.Load<TextAsset>("Topaz Response 1-1").text.Split('\n');
-        linesTopazRes12 = Resources.Load<TextAsset>("Topaz Response 1-2").text.Split('\n');
-        linesTopazRes13 = Resources.Load<TextAsset>("Topaz Response 1-3").text.Split('\n');
-        linesTopaz2 = Resources.Load<TextAsset>("Topaz 2").text.Split('\n');
-        linesPlayer2 = Resources.Load<TextAsset>("Player 2").text.Split('\n');
-        linesTopazRes21 = Resources.Load<TextAsset>("Topaz Response 2-1").text.Split('\n');
-        linesTopazRes22 = Resources.Load<TextAsset>("Topaz Response 2-2").text.Split('\n');
-        linesTopazRes23 = Resources.Load<TextAsset>("Topaz Response 2-3").text.Split('\n');
+        linesTopaz1 = Resources.Load<TextAsset>("Dialogue/Topaz 1").text.Split('\n');
+        //linesPlayer1 = Resources.Load<TextAsset>("Player 1").text.Split('\n');
+        //linesTopazRes11 = Resources.Load<TextAsset>("Topaz Response 1-1").text.Split('\n');
+        //linesTopazRes12 = Resources.Load<TextAsset>("Topaz Response 1-2").text.Split('\n');
+        //linesTopazRes13 = Resources.Load<TextAsset>("Topaz Response 1-3").text.Split('\n');
+        //linesTopaz2 = Resources.Load<TextAsset>("Topaz 2").text.Split('\n');
+        //linesPlayer2 = Resources.Load<TextAsset>("Player 2").text.Split('\n');
+        //linesTopazRes21 = Resources.Load<TextAsset>("Topaz Response 2-1").text.Split('\n');
+        //linesTopazRes22 = Resources.Load<TextAsset>("Topaz Response 2-2").text.Split('\n');
+        //linesTopazRes23 = Resources.Load<TextAsset>("Topaz Response 2-3").text.Split('\n');
 
         displayLines[0] = linesTopaz1[0];
 
@@ -188,18 +189,27 @@ public class DialogueSystem : MonoBehaviour
             }
             else if (currBranch == Branch.TopazRes21)
             {
-                dialogueIter++;
-                DialogueSystem.addToDisplayLines(DialogueSystem.linesTopazRes21[dialogueIter]);
+                if (dialogueIter < 21)
+                {
+                    dialogueIter++;
+                    DialogueSystem.addToDisplayLines(DialogueSystem.linesTopazRes21[dialogueIter]);
+                }
             }
             else if (currBranch == Branch.TopazRes22)
             {
-                dialogueIter++;
-                DialogueSystem.addToDisplayLines(DialogueSystem.linesTopazRes22[dialogueIter]);
+                if (dialogueIter <15)
+                {
+                    dialogueIter++;
+                    DialogueSystem.addToDisplayLines(DialogueSystem.linesTopazRes22[dialogueIter]);
+                }
             }
             else if (currBranch == Branch.TopazRes23)
             {
-                dialogueIter++;
-                DialogueSystem.addToDisplayLines(DialogueSystem.linesTopazRes23[dialogueIter]);
+                if (dialogueIter < 23)
+                {
+                    dialogueIter++;
+                    DialogueSystem.addToDisplayLines(DialogueSystem.linesTopazRes23[dialogueIter]);
+                }
             }
         }
 
@@ -228,8 +238,8 @@ public class DialogueSystem : MonoBehaviour
                     DialogueSystem.addToDisplayLines("Press and hold space to start selecting. Let go of space to choose displayed dialogue choice.");
                 } else if(nextBranch == Branch.PreChoice2)
                 {
-                    nextBranch = Branch.TopazRes21;
-                    DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer2[0]);
+                    nextBranch = Branch.Tutorial2;
+                    DialogueSystem.addToDisplayLines("Press and hold space to choose next dialogue.");
                 }
             } else if (timer < 2)
             {
@@ -238,10 +248,10 @@ public class DialogueSystem : MonoBehaviour
                     nextBranch = Branch.TopazRes11;
                     DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer1[0]);
                 }
-                else if (nextBranch == Branch.TopazRes21)
+                else if (nextBranch == Branch.Tutorial2)
                 {
-                    nextBranch = Branch.TopazRes22;
-                    DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer2[1]);
+                    nextBranch = Branch.TopazRes21;
+                    DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer2[0]);
                 }
             } else if (timer < 3)
             {
@@ -250,10 +260,10 @@ public class DialogueSystem : MonoBehaviour
                     nextBranch = Branch.TopazRes12;
                     DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer1[1]);
                 }
-                else if (nextBranch == Branch.TopazRes22)
+                else if (nextBranch == Branch.TopazRes21)
                 {
-                    nextBranch = Branch.TopazRes23;
-                    DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer2[2]);
+                    nextBranch = Branch.TopazRes22;
+                    DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer2[1]);
                 }
             } else
             {
@@ -261,6 +271,11 @@ public class DialogueSystem : MonoBehaviour
                 {
                     nextBranch = Branch.TopazRes13;
                     DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer1[2]);
+                }
+                else if (nextBranch == Branch.TopazRes22)
+                {
+                    nextBranch = Branch.TopazRes23;
+                    DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer2[2]);
                 }
             }
         }
