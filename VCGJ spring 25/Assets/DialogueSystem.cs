@@ -40,9 +40,9 @@ public class DialogueSystem : MonoBehaviour
     public TextMeshProUGUI dialogueTimerGUI;
     public TextMeshProUGUI dialogueIterGUI;
     public TextMeshProUGUI branchGUI;
+    public TextMeshProUGUI displayIterGUI;
     public float timer;
     public float timerSpeed;
-    public TextAsset dataTopaz1;
 
     public static string[] linesTopaz1;
     public static string[] linesPlayer1;
@@ -58,6 +58,9 @@ public class DialogueSystem : MonoBehaviour
     private DialogueHandler dialogueHandler;
     public static string[] displayLines;
     public static int displayIter;
+    public int diplayIterOffset;
+
+    public static AudioSource audioSource;
 
 
     // Start is called before the first frame update
@@ -70,18 +73,20 @@ public class DialogueSystem : MonoBehaviour
         {
             displayLines[i] = " ";
         }
+
+        displayIter = 0;
         displayIter = 0;
 
         linesTopaz1 = Resources.Load<TextAsset>("Dialogue/Topaz 1").text.Split('\n');
-        //linesPlayer1 = Resources.Load<TextAsset>("Player 1").text.Split('\n');
-        //linesTopazRes11 = Resources.Load<TextAsset>("Topaz Response 1-1").text.Split('\n');
-        //linesTopazRes12 = Resources.Load<TextAsset>("Topaz Response 1-2").text.Split('\n');
-        //linesTopazRes13 = Resources.Load<TextAsset>("Topaz Response 1-3").text.Split('\n');
-        //linesTopaz2 = Resources.Load<TextAsset>("Topaz 2").text.Split('\n');
-        //linesPlayer2 = Resources.Load<TextAsset>("Player 2").text.Split('\n');
-        //linesTopazRes21 = Resources.Load<TextAsset>("Topaz Response 2-1").text.Split('\n');
-        //linesTopazRes22 = Resources.Load<TextAsset>("Topaz Response 2-2").text.Split('\n');
-        //linesTopazRes23 = Resources.Load<TextAsset>("Topaz Response 2-3").text.Split('\n');
+        linesPlayer1 = Resources.Load<TextAsset>("Dialogue/Player 1").text.Split('\n');
+        linesTopazRes11 = Resources.Load<TextAsset>("Dialogue/Topaz Response 1-1").text.Split('\n');
+        linesTopazRes12 = Resources.Load<TextAsset>("Dialogue/Topaz Response 1-2").text.Split('\n');
+        linesTopazRes13 = Resources.Load<TextAsset>("Dialogue/Topaz Response 1-3").text.Split('\n');
+        linesTopaz2 = Resources.Load<TextAsset>("Dialogue/Topaz 2").text.Split('\n');
+        linesPlayer2 = Resources.Load<TextAsset>("Dialogue/Player 2").text.Split('\n');
+        linesTopazRes21 = Resources.Load<TextAsset>("Dialogue/Topaz Response 2-1").text.Split('\n');
+        linesTopazRes22 = Resources.Load<TextAsset>("Dialogue/Topaz Response 2-2").text.Split('\n');
+        linesTopazRes23 = Resources.Load<TextAsset>("Dialogue/Topaz Response 2-3").text.Split('\n');
 
         displayLines[0] = linesTopaz1[0];
 
@@ -125,6 +130,7 @@ public class DialogueSystem : MonoBehaviour
         dialogueTextGUI.SetText(displayLines[displayIter]);
         dialogueIterGUI.SetText(dialogueHandler.getIter().ToString());
         branchGUI.SetText(dialogueHandler.whichBranch().ToString());
+        displayIterGUI.SetText(displayIter.ToString());
     }
 
     public static void addToDisplayLines(string add)
@@ -211,6 +217,7 @@ public class DialogueSystem : MonoBehaviour
                     DialogueSystem.addToDisplayLines(DialogueSystem.linesTopazRes23[dialogueIter]);
                 }
             }
+            playSound();
         }
 
         public void madeChoice()
@@ -278,6 +285,13 @@ public class DialogueSystem : MonoBehaviour
                     DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer2[2]);
                 }
             }
+        }
+
+        public void playSound()
+        {
+            DialogueSystem.audioSource.clip = Resources.Load<AudioClip>("Sounds/1 *..mp3");
+            // https://stackoverflow.com/questions/66365800/how-to-use-regex-in-assetdatabase-findassets
+            DialogueSystem.audioSource.Play();
         }
 
         public bool isChoosing()
