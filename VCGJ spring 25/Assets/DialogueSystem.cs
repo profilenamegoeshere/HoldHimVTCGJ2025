@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -24,6 +25,13 @@ public enum Branch
     TopazRes23
 }
 
+public enum Speakers
+{
+    Topaz,
+    Doku,
+    None
+}
+
 /*
  * TODO
  * Add voices lines
@@ -31,12 +39,17 @@ public enum Branch
  * Add some images
  * 
  * Add a title screen (I think that would be a different scene?)
+ * 
+ * Make tutorial better
+ * 
+ * Then you can fix all the little things that bother you
  */
 
 
 public class DialogueSystem : MonoBehaviour
-{
+{   
     public TextMeshProUGUI dialogueTextGUI;
+    public TextMeshProUGUI speakerNameGUI;
     public TextMeshProUGUI dialogueTimerGUI;
     public TextMeshProUGUI dialogueIterGUI;
     public TextMeshProUGUI branchGUI;
@@ -44,37 +57,36 @@ public class DialogueSystem : MonoBehaviour
     public float timer;
     public float timerSpeed;
 
-    public static string[] linesTopaz1;
-    public static string[] linesPlayer1;
-    public static string[] linesTopazRes11;
-    public static string[] linesTopazRes12;
-    public static string[] linesTopazRes13;
-    public static string[] linesTopaz2;
-    public static string[] linesPlayer2;
-    public static string[] linesTopazRes21;
-    public static string[] linesTopazRes22;
-    public static string[] linesTopazRes23;
+    public string[] linesTopaz1;
+    public string[] linesPlayer1;
+    public string[] linesTopazRes11;
+    public string[] linesTopazRes12;
+    public string[] linesTopazRes13;
+    public string[] linesTopaz2;
+    public string[] linesPlayer2;
+    public string[] linesTopazRes21;
+    public string[] linesTopazRes22;
+    public string[] linesTopazRes23;
 
     private DialogueHandler dialogueHandler;
-    public static string[] displayLines;
-    public static int displayIter;
+    public string[] displayLines;
+    public int displayIter;
     public int diplayIterOffset;
 
-    public static AudioSource audioSource;
-
+    public AudioSource audioSource;
+    public AudioClip[] audioClips;
 
     // Start is called before the first frame update
     void Start()
     {
         timer = 0;
-        dialogueHandler = new DialogueHandler();
+        dialogueHandler = new DialogueHandler(this);
         displayLines = new string[80];
         for (int i = 0; i < 80; i++)
         {
             displayLines[i] = " ";
         }
 
-        displayIter = 0;
         displayIter = 0;
 
         linesTopaz1 = Resources.Load<TextAsset>("Dialogue/Topaz 1").text.Split('\n');
@@ -89,7 +101,17 @@ public class DialogueSystem : MonoBehaviour
         linesTopazRes23 = Resources.Load<TextAsset>("Dialogue/Topaz Response 2-3").text.Split('\n');
 
         displayLines[0] = linesTopaz1[0];
+        speakerNameGUI.SetText("Topaz");
 
+        audioClips = Resources.LoadAll<AudioClip>("Sounds/").OrderBy(clip => clip.name).ToArray();
+
+        if (audioClips[0]!=null)
+        {
+            Debug.Log(audioClips[0].name);
+        } else
+        {
+            Debug.Log("Audio no work :(");
+        }
     }
 
     // Update is called once per frame
@@ -103,9 +125,9 @@ public class DialogueSystem : MonoBehaviour
         if (dialogueHandler.isChoosing())
         {
             // TODO if less than 1 and let go of space just reset timer and dont choose
-            if (timer < timerLimit && (Input.GetKey(KeyCode.Space)||timer<=1))
+            if (timer < timerLimit && (Input.GetKey(KeyCode.Space) || timer <= 1))
             {
-                timer += (Time.deltaTime)/2;
+                timer += (Time.deltaTime) / 2;
                 dialogueHandler.checkChoosing(timer);
             }
             else if (timer > 1)
@@ -113,7 +135,7 @@ public class DialogueSystem : MonoBehaviour
                 dialogueHandler.madeChoice();
                 timer = 0;
             }
-        } 
+        }
         else
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -133,63 +155,83 @@ public class DialogueSystem : MonoBehaviour
         displayIterGUI.SetText(displayIter.ToString());
     }
 
-    public static void addToDisplayLines(string add)
+    public void addToDisplayLines(string add)
     {
-        displayLines[displayIter+1] = add;
+        displayLines[displayIter + 1] = add;
         displayIter++;
+    }
+
+    public void updateSpeakerDisplay(string newName)
+    {
+        speakerNameGUI.SetText(newName);
+    }
+
+    public class AudioNameSort : Comparer<AudioClip>
+    {
+        public override int Compare(AudioClip x, AudioClip y)
+        {
+            return String.Compare(x.name, y.name, StringComparison.Ordinal);
+        }
     }
 
     public class DialogueHandler
     {
+        public DialogueSystem dialogueSystem;
+
         public int dialogueIter = 0;
         public Branch currBranch = Branch.Topaz1;
         public Branch nextBranch = Branch.PreChoice1;
         public Boolean choosing = false;
+
+        public DialogueHandler(DialogueSystem newDialogueSystem)
+        {
+            dialogueSystem = newDialogueSystem;
+        }
 
         public void advanceDialogue()
         {
             if(dialogueIter < 4 && currBranch == Branch.Topaz1)
             {
                 dialogueIter++;
-                DialogueSystem.addToDisplayLines(DialogueSystem.linesTopaz1[dialogueIter]);
+                dialogueSystem.addToDisplayLines(dialogueSystem.linesTopaz1[dialogueIter]);
             } 
             else if (dialogueIter >= 4 && currBranch == Branch.Topaz1)
             {
                 currBranch = Branch.Player1;
-                DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer1[0]);
+                dialogueSystem.addToDisplayLines(dialogueSystem.linesPlayer1[0]);
                 dialogueIter = 0;
                 choosing = true;
             } 
             else if(currBranch == Branch.TopazRes11)
             {
                 dialogueIter++;
-                DialogueSystem.addToDisplayLines(DialogueSystem.linesTopazRes11[dialogueIter]);
+                dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes11[dialogueIter]);
                 currBranch = Branch.Topaz2;
                 dialogueIter = 0;
             }
             else if (currBranch == Branch.TopazRes12)
             {
                 dialogueIter++;
-                DialogueSystem.addToDisplayLines(DialogueSystem.linesTopazRes12[dialogueIter]);
+                dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes12[dialogueIter]);
                 currBranch = Branch.Topaz2;
                 dialogueIter = 0;
             }
             else if (currBranch == Branch.TopazRes13)
             {
                 dialogueIter++;
-                DialogueSystem.addToDisplayLines(DialogueSystem.linesTopazRes13[dialogueIter]);
+                dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes13[dialogueIter]);
                 currBranch = Branch.Topaz2;
                 dialogueIter = 0;
             }
             else if (dialogueIter < 7 && currBranch == Branch.Topaz2)
             {
-                DialogueSystem.addToDisplayLines(DialogueSystem.linesTopaz2[dialogueIter]);
+                dialogueSystem.addToDisplayLines(dialogueSystem.linesTopaz2[dialogueIter]);
                 dialogueIter++;
             }
             else if(dialogueIter >= 7 && currBranch == Branch.Topaz2)
             {
                 currBranch = Branch.Player2;
-                DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer2[0]);
+                dialogueSystem.addToDisplayLines(dialogueSystem.linesPlayer2[0]);
                 dialogueIter = 0;
                 choosing = true;
             }
@@ -198,7 +240,7 @@ public class DialogueSystem : MonoBehaviour
                 if (dialogueIter < 21)
                 {
                     dialogueIter++;
-                    DialogueSystem.addToDisplayLines(DialogueSystem.linesTopazRes21[dialogueIter]);
+                    dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes21[dialogueIter]);
                 }
             }
             else if (currBranch == Branch.TopazRes22)
@@ -206,7 +248,7 @@ public class DialogueSystem : MonoBehaviour
                 if (dialogueIter <15)
                 {
                     dialogueIter++;
-                    DialogueSystem.addToDisplayLines(DialogueSystem.linesTopazRes22[dialogueIter]);
+                    dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes22[dialogueIter]);
                 }
             }
             else if (currBranch == Branch.TopazRes23)
@@ -214,10 +256,11 @@ public class DialogueSystem : MonoBehaviour
                 if (dialogueIter < 23)
                 {
                     dialogueIter++;
-                    DialogueSystem.addToDisplayLines(DialogueSystem.linesTopazRes23[dialogueIter]);
+                    dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes23[dialogueIter]);
                 }
             }
-            playSound();
+            callUpdateSpeakerDisplay();
+            //playSound();
         }
 
         public void madeChoice()
@@ -242,56 +285,81 @@ public class DialogueSystem : MonoBehaviour
                 if (nextBranch == Branch.PreChoice1)
                 {
                     nextBranch = Branch.Tutorial;
-                    DialogueSystem.addToDisplayLines("Press and hold space to start selecting. Let go of space to choose displayed dialogue choice.");
+                    dialogueSystem.addToDisplayLines("Press and hold space to start selecting. Let go of space to choose displayed dialogue choice.");
                 } else if(nextBranch == Branch.PreChoice2)
                 {
                     nextBranch = Branch.Tutorial2;
-                    DialogueSystem.addToDisplayLines("Press and hold space to choose next dialogue.");
+                    dialogueSystem.addToDisplayLines("Press and hold space to choose next dialogue.");
                 }
             } else if (timer < 2)
             {
                 if (nextBranch == Branch.Tutorial)
                 {
                     nextBranch = Branch.TopazRes11;
-                    DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer1[0]);
+                    dialogueSystem.addToDisplayLines(dialogueSystem.linesPlayer1[0]);
                 }
                 else if (nextBranch == Branch.Tutorial2)
                 {
                     nextBranch = Branch.TopazRes21;
-                    DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer2[0]);
+                    dialogueSystem.addToDisplayLines(dialogueSystem.linesPlayer2[0]);
                 }
             } else if (timer < 3)
             {
                 if (nextBranch == Branch.TopazRes11)
                 {
                     nextBranch = Branch.TopazRes12;
-                    DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer1[1]);
+                    dialogueSystem.addToDisplayLines(dialogueSystem.linesPlayer1[1]);
                 }
                 else if (nextBranch == Branch.TopazRes21)
                 {
                     nextBranch = Branch.TopazRes22;
-                    DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer2[1]);
+                    dialogueSystem.addToDisplayLines(dialogueSystem.linesPlayer2[1]);
                 }
             } else
             {
                 if (nextBranch == Branch.TopazRes12)
                 {
                     nextBranch = Branch.TopazRes13;
-                    DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer1[2]);
+                    dialogueSystem.addToDisplayLines(dialogueSystem.linesPlayer1[2]);
                 }
                 else if (nextBranch == Branch.TopazRes22)
                 {
                     nextBranch = Branch.TopazRes23;
-                    DialogueSystem.addToDisplayLines(DialogueSystem.linesPlayer2[2]);
+                    dialogueSystem.addToDisplayLines(dialogueSystem.linesPlayer2[2]);
                 }
             }
         }
 
+        public void callUpdateSpeakerDisplay()
+        {
+            string newName = "";
+            if (currBranch == Branch.Topaz1 ||
+                currBranch == Branch.Topaz2 ||
+                currBranch == Branch.TopazRes11 ||
+                currBranch == Branch.TopazRes12 ||
+                currBranch == Branch.TopazRes13 ||
+                currBranch == Branch.TopazRes21 ||
+                currBranch == Branch.TopazRes22 ||
+                currBranch == Branch.TopazRes23 )
+            {
+                newName = "Topaz";
+            }
+            else if (currBranch == Branch.Player1 ||
+                     currBranch == Branch.Player2)
+            {
+                newName = "Topaz";
+            }
+            else
+            {
+                newName = " ";
+            }
+            dialogueSystem.updateSpeakerDisplay(newName);
+        }
+
         public void playSound()
         {
-            DialogueSystem.audioSource.clip = Resources.Load<AudioClip>("Sounds/1 *..mp3");
-            // https://stackoverflow.com/questions/66365800/how-to-use-regex-in-assetdatabase-findassets
-            DialogueSystem.audioSource.Play();
+            dialogueSystem.audioSource.clip = dialogueSystem.audioClips[0];
+            dialogueSystem.audioSource.Play();
         }
 
         public bool isChoosing()
