@@ -55,10 +55,15 @@ public class DialogueSystem : MonoBehaviour
     public TextMeshProUGUI branchGUI;
     public TextMeshProUGUI displayIterGUI;
     public TextMeshProUGUI isChoosingGUI;
-    public TextMeshProUGUI soundIter;
+    public TextMeshProUGUI soundIterGUI;
+    public TextMeshProUGUI ending3TimerGUI;
+    public TextMeshProUGUI endingGUI;
     public float timer;
     public float timerSpeed;
     public float timerLimit;
+    public float ending3Timer;
+    public Boolean ending3CanPlay;
+    public Boolean[] ending3Triggers;
 
     public string[] linesTopaz1;
     public string[] linesPlayer1;
@@ -84,8 +89,11 @@ public class DialogueSystem : MonoBehaviour
     {
         timer = 0;
         timerLimit = 0;
+        ending3Timer = 0;
         dialogueHandler = new DialogueHandler(this);
         displayLines = new string[80];
+        ending3CanPlay = true;
+        ending3Triggers = new bool[6];
         for (int i = 0; i < 80; i++)
         {
             displayLines[i] = " ";
@@ -123,12 +131,13 @@ public class DialogueSystem : MonoBehaviour
         if (dialogueHandler.isChoosing())
         {
             // TODO if less than 1 and let go of space just reset timer and dont choose
-            if (timer < timerLimit && (Input.GetKey(KeyCode.Space) || timer <= 1))
+            if(timer<1 && !(Input.GetKey(KeyCode.Space))){
+                timer = 0;
+            } else if (timer < timerLimit && Input.GetKey(KeyCode.Space))
             {
-                timer += (Time.deltaTime) / 2;
+                timer += (Time.deltaTime) / (100/timerSpeed);
                 dialogueHandler.checkChoosing(timer);
-            }
-            else if (timer > 1)
+            } else if (timer > 1)
             {
                 dialogueHandler.madeChoice();
                 timer = 0;
@@ -136,23 +145,175 @@ public class DialogueSystem : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space)&&ending3CanPlay)
             {
                 dialogueHandler.advanceDialogue();
             }
+        }
+
+        if (dialogueHandler.whichBranch() == Branch.TopazRes23 && 
+            dialogueHandler.getIter()>=9 &&
+            dialogueHandler.getIter()<=15)
+        {
+            ending3();
         }
         updateScreen();
     }
 
     void updateScreen()
     {
-        dialogueTimerGUI.SetText(timer.ToString());
         dialogueTextGUI.SetText(displayLines[displayIter]);
+        if (dialogueHandler.whichBranch() == Branch.Player2)
+        {
+            speakerNameGUI.gameObject.SetActive(false);
+        }
+        else
+        {
+            speakerNameGUI.gameObject.SetActive(true);
+        }
+        if (dialogueHandler.whichBranch() == Branch.Topaz2||
+           dialogueHandler.whichBranch() == Branch.TopazRes11||
+           dialogueHandler.whichBranch() == Branch.TopazRes12||
+           dialogueHandler.whichBranch() == Branch.TopazRes13)
+        {
+            speakerNameGUI.SetText("Topaz");
+        } else if(dialogueHandler.whichBranch() == Branch.Topaz1)
+        {
+            if(dialogueHandler.dialogueIter == 3)
+            {
+                speakerNameGUI.SetText("Tutorial");
+            } else
+            {
+                speakerNameGUI.SetText("Topaz");
+            }
+        } else if(dialogueHandler.whichBranch() == Branch.Player1)
+        {
+            speakerNameGUI.SetText("Tutorial");
+        }
+        else if (dialogueHandler.whichBranch() == Branch.TopazRes21)
+        {
+            if (dialogueHandler.dialogueIter == 13 ||
+               dialogueHandler.dialogueIter >= 19)
+            {
+                speakerNameGUI.gameObject.SetActive(false);
+            } else
+            {
+                speakerNameGUI.gameObject.SetActive(true);
+
+            }
+            if (dialogueHandler.dialogueIter == 14 ||
+               dialogueHandler.dialogueIter == 15 ||
+               dialogueHandler.dialogueIter == 17)
+            {
+                speakerNameGUI.SetText("Doku");
+            }
+            else
+            {
+                speakerNameGUI.SetText("Topaz");
+            }
+        } else if (dialogueHandler.whichBranch() == Branch.TopazRes22)
+        {
+            if (dialogueHandler.dialogueIter >= 14)
+            {
+                speakerNameGUI.gameObject.SetActive(false);
+            } else
+            {
+                speakerNameGUI.gameObject.SetActive(true);
+            }
+            if (dialogueHandler.dialogueIter == 12 ||
+               dialogueHandler.dialogueIter == 13)
+            {
+                speakerNameGUI.SetText("Doku");
+            }
+            else
+            {
+                speakerNameGUI.SetText("Topaz");
+            }
+        } else if (dialogueHandler.whichBranch() == Branch.TopazRes23)
+        {
+            speakerNameGUI.SetText("Topaz");
+            if ((dialogueHandler.dialogueIter >= 6 &&
+               dialogueHandler.dialogueIter <= 8) ||
+               dialogueHandler.dialogueIter >= 15)
+            {
+                speakerNameGUI.gameObject.SetActive(false);
+            } else
+            {
+                speakerNameGUI.gameObject.SetActive(true);
+            }
+        }
+
+        if(dialogueHandler.whichEnding == 1)
+        {
+            endingGUI.gameObject.SetActive(true);
+            endingGUI.SetText("Ending 1/3: Hold Him Tight");
+        } else if(dialogueHandler.whichEnding == 2)
+        {
+            endingGUI.gameObject.SetActive(true);
+            endingGUI.SetText("Ending 2/3: Him Him Accountable");
+        } else if (dialogueHandler.whichEnding == 2)
+        {
+            endingGUI.gameObject.SetActive(true);
+            endingGUI.SetText("Ending 2/3: Him Him Back");
+        } else
+        {
+            endingGUI.gameObject.SetActive(false);
+        }
+
+            // debug guis
+            dialogueTimerGUI.SetText(timer.ToString());
         dialogueIterGUI.SetText(dialogueHandler.getIter().ToString());
         branchGUI.SetText(dialogueHandler.whichBranch().ToString());
         displayIterGUI.SetText(displayIter.ToString());
         isChoosingGUI.SetText(dialogueHandler.isChoosing().ToString());
-        soundIter.SetText(dialogueHandler.getSoundIter().ToString());
+        soundIterGUI.SetText(dialogueHandler.getSoundIter().ToString());
+        ending3TimerGUI.SetText(ending3Timer.ToString());
+    }
+
+    public void ending3()
+    {
+        ending3CanPlay = false;
+        ending3Timer += Time.deltaTime;
+        if (ending3Timer > 3.15 && !ending3Triggers[0])
+        {
+            ending3Triggers[0] = true;
+            dialogueHandler.advanceDialogue();
+            Debug.Log("Ending 3 play line 1");
+        }
+        if (ending3Timer > 4.7 && !ending3Triggers[1])
+        {
+            ending3Triggers[1] = true;
+            dialogueHandler.advanceDialogue();
+            Debug.Log("Ending 3 play line 2");
+        }
+        if (ending3Timer > 6.3 && !ending3Triggers[2])
+        {
+            ending3Triggers[2] = true;
+            dialogueHandler.advanceDialogue();
+            Debug.Log("Ending 3 play line 3");
+        }
+        if (ending3Timer > 7.9 && !ending3Triggers[3])
+        {
+            ending3Triggers[3] = true;
+            dialogueHandler.advanceDialogue();
+            Debug.Log("Ending 3 play line 4");
+        }
+        if (ending3Timer > 9.6 && !ending3Triggers[4])
+        {
+            ending3Triggers[4] = true;
+            dialogueHandler.advanceDialogue();
+            Debug.Log("Ending 3 play line 5");
+        }
+        if (ending3Timer > 12.0 && !ending3Triggers[5])
+        {
+            ending3Triggers[5] = true;
+            dialogueHandler.advanceDialogue();
+            Debug.Log("Ending 3 play line 6");
+        }
+        if(ending3Timer > 12.0 && ending3Triggers[5])
+        {
+            ending3CanPlay = true;
+        }
     }
 
     public void addToDisplayLines(string add)
@@ -183,7 +344,7 @@ public class DialogueSystem : MonoBehaviour
         public Branch nextBranch = Branch.PreChoice1;
         public Boolean choosing = false;
         public int soundIter = 0;
-        public bool playSoundOnNextLine = false;
+        public int whichEnding = 0;
 
         public DialogueHandler(DialogueSystem newDialogueSystem)
         {
@@ -196,7 +357,6 @@ public class DialogueSystem : MonoBehaviour
             {
                 dialogueIter++;
                 dialogueSystem.addToDisplayLines(dialogueSystem.linesTopaz1[dialogueIter]);
-                playSoundOnNextLine = true;
                 if(dialogueIter < 3)
                 {
                     soundIter++;
@@ -260,33 +420,79 @@ public class DialogueSystem : MonoBehaviour
             }
             else if (currBranch == Branch.TopazRes21)
             {
-                if (dialogueIter < 21)
+                if (dialogueIter <= 20)
                 {
                     dialogueIter++;
                     dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes21[dialogueIter]);
-                    playSoundOnNextLine = true;
+                    if (soundIter < 14)
+                    {
+                        Debug.Log("soundIter = 13");
+                        soundIter = 13;
+                        playSound();
+                        soundIter++;
+                    } else if(!((dialogueIter>=13)&&(dialogueIter<=15))&&
+                              !(dialogueIter==17)&&
+                              !(dialogueIter>=19))
+                    {
+                        Debug.Log("sound Iter is now " + soundIter.ToString());
+                        playSound();
+                        soundIter++;
+                    }
+                }
+                if(dialogueIter == 20)
+                {
+                    whichEnding = 1;
                 }
             }
             else if (currBranch == Branch.TopazRes22)
             {
-                if (dialogueIter <15)
+                if (dialogueIter <= 15)
                 {
                     dialogueIter++;
                     dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes22[dialogueIter]);
-                    playSoundOnNextLine = true;
+                    if (soundIter < 14)
+                    {
+                        Debug.Log("soundIter = 28");
+                        soundIter = 28;
+                        playSound();
+                        soundIter++;
+                    } else if(!(dialogueIter>=12))
+                    {
+                        Debug.Log("sound Iter is now " + soundIter.ToString());
+                        playSound();
+                        soundIter++;
+                    }
+                }
+                if(dialogueIter == 15)
+                {
+                    whichEnding = 2;
                 }
             }
             else if (currBranch == Branch.TopazRes23)
             {
-                if (dialogueIter < 23)
+                if (dialogueIter <= 23)
                 {
                     dialogueIter++;
                     dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes23[dialogueIter]);
-                    playSoundOnNextLine = true;
+                    if (soundIter < 14)
+                    {
+                        Debug.Log("soundIter = 40");
+                        soundIter = 40;
+                        playSound();
+                        soundIter++;
+                    }
+                    else if(!(dialogueIter>=6&&dialogueIter<=8)&&
+                            !(dialogueIter>=15))
+                    {
+                        Debug.Log("sound Iter is now " + soundIter.ToString());
+                        playSound();
+                        soundIter++;
+                    }
                 }
-            } else
-            {
-                playSoundOnNextLine = false;
+                if(dialogueIter == 23)
+                {
+                    whichEnding = 3;
+                }
             }
             callUpdateSpeakerDisplay();
         }
@@ -386,12 +592,10 @@ public class DialogueSystem : MonoBehaviour
 
         public void playSound()
         {
-            if (playSoundOnNextLine)
-            {
-                dialogueSystem.audioSource.clip = dialogueSystem.audioClips[soundIter];
-                dialogueSystem.audioSource.Play();
-                Debug.Log(dialogueSystem.audioSource.clip.name);
-            }
+            dialogueSystem.audioSource.clip = dialogueSystem.audioClips[soundIter];
+            dialogueSystem.audioSource.Play();
+            Debug.Log(soundIter.ToString());
+            Debug.Log(dialogueSystem.audioSource.clip.name);
         }
 
         public bool isChoosing()
