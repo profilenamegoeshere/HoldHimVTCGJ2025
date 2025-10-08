@@ -104,14 +104,8 @@ public class DialogueSystem : MonoBehaviour
         speakerNameGUI.SetText("Topaz");
 
         audioClips = Resources.LoadAll<AudioClip>("Sounds/").OrderBy(clip => clip.name).ToArray();
-
-        if (audioClips[0]!=null)
-        {
-            Debug.Log(audioClips[0].name);
-        } else
-        {
-            Debug.Log("Audio no work :(");
-        }
+        audioSource.clip = audioClips[0];
+        audioSource.Play();
     }
 
     // Update is called once per frame
@@ -182,6 +176,8 @@ public class DialogueSystem : MonoBehaviour
         public Branch currBranch = Branch.Topaz1;
         public Branch nextBranch = Branch.PreChoice1;
         public Boolean choosing = false;
+        public int soundIter = 0;
+        public bool playSoundOnNextLine = false;
 
         public DialogueHandler(DialogueSystem newDialogueSystem)
         {
@@ -194,9 +190,15 @@ public class DialogueSystem : MonoBehaviour
             {
                 dialogueIter++;
                 dialogueSystem.addToDisplayLines(dialogueSystem.linesTopaz1[dialogueIter]);
+                playSoundOnNextLine = true;
+                if(dialogueIter == 3)
+                {
+                    playSoundOnNextLine = false;
+                }
             } 
             else if (dialogueIter >= 4 && currBranch == Branch.Topaz1)
             {
+                playSoundOnNextLine = true;
                 currBranch = Branch.Player1;
                 dialogueSystem.addToDisplayLines(dialogueSystem.linesPlayer1[0]);
                 dialogueIter = 0;
@@ -241,6 +243,7 @@ public class DialogueSystem : MonoBehaviour
                 {
                     dialogueIter++;
                     dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes21[dialogueIter]);
+                    playSoundOnNextLine = true;
                 }
             }
             else if (currBranch == Branch.TopazRes22)
@@ -249,6 +252,7 @@ public class DialogueSystem : MonoBehaviour
                 {
                     dialogueIter++;
                     dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes22[dialogueIter]);
+                    playSoundOnNextLine = true;
                 }
             }
             else if (currBranch == Branch.TopazRes23)
@@ -257,10 +261,18 @@ public class DialogueSystem : MonoBehaviour
                 {
                     dialogueIter++;
                     dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes23[dialogueIter]);
+                    playSoundOnNextLine = true;
                 }
+            } else
+            {
+                playSoundOnNextLine = false;
             }
             callUpdateSpeakerDisplay();
-            //playSound();
+            if (playSoundOnNextLine)
+            {
+                soundIter++;
+                playSound();
+            }
         }
 
         public void madeChoice()
@@ -358,8 +370,12 @@ public class DialogueSystem : MonoBehaviour
 
         public void playSound()
         {
-            dialogueSystem.audioSource.clip = dialogueSystem.audioClips[0];
-            dialogueSystem.audioSource.Play();
+            if (playSoundOnNextLine)
+            {
+                dialogueSystem.audioSource.clip = dialogueSystem.audioClips[soundIter];
+                dialogueSystem.audioSource.Play();
+                Debug.Log(dialogueSystem.audioSource.clip.name);
+            }
         }
 
         public bool isChoosing()
