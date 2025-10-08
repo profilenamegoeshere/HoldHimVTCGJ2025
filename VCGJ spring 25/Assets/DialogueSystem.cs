@@ -54,8 +54,11 @@ public class DialogueSystem : MonoBehaviour
     public TextMeshProUGUI dialogueIterGUI;
     public TextMeshProUGUI branchGUI;
     public TextMeshProUGUI displayIterGUI;
+    public TextMeshProUGUI isChoosingGUI;
+    public TextMeshProUGUI soundIter;
     public float timer;
     public float timerSpeed;
+    public float timerLimit;
 
     public string[] linesTopaz1;
     public string[] linesPlayer1;
@@ -80,6 +83,7 @@ public class DialogueSystem : MonoBehaviour
     void Start()
     {
         timer = 0;
+        timerLimit = 0;
         dialogueHandler = new DialogueHandler(this);
         displayLines = new string[80];
         for (int i = 0; i < 80; i++)
@@ -111,7 +115,7 @@ public class DialogueSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        int timerLimit = 4;
+        timerLimit = 4;
         if (dialogueHandler.whichBranch() == Branch.PreChoice2)
         {
             timerLimit = 3;
@@ -147,6 +151,8 @@ public class DialogueSystem : MonoBehaviour
         dialogueIterGUI.SetText(dialogueHandler.getIter().ToString());
         branchGUI.SetText(dialogueHandler.whichBranch().ToString());
         displayIterGUI.SetText(displayIter.ToString());
+        isChoosingGUI.SetText(dialogueHandler.isChoosing().ToString());
+        soundIter.SetText(dialogueHandler.getSoundIter().ToString());
     }
 
     public void addToDisplayLines(string add)
@@ -186,19 +192,19 @@ public class DialogueSystem : MonoBehaviour
 
         public void advanceDialogue()
         {
-            if(dialogueIter < 4 && currBranch == Branch.Topaz1)
+            if(dialogueIter < 3 && currBranch == Branch.Topaz1)
             {
                 dialogueIter++;
                 dialogueSystem.addToDisplayLines(dialogueSystem.linesTopaz1[dialogueIter]);
                 playSoundOnNextLine = true;
-                if(dialogueIter == 3)
+                if(dialogueIter < 3)
                 {
-                    playSoundOnNextLine = false;
+                    soundIter++;
+                    playSound();
                 }
             } 
-            else if (dialogueIter >= 4 && currBranch == Branch.Topaz1)
+            else if (dialogueIter >= 3 && currBranch == Branch.Topaz1)
             {
-                playSoundOnNextLine = true;
                 currBranch = Branch.Player1;
                 dialogueSystem.addToDisplayLines(dialogueSystem.linesPlayer1[0]);
                 dialogueIter = 0;
@@ -206,6 +212,9 @@ public class DialogueSystem : MonoBehaviour
             } 
             else if(currBranch == Branch.TopazRes11)
             {
+                soundIter = 3;
+                playSound();
+
                 dialogueIter++;
                 dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes11[dialogueIter]);
                 currBranch = Branch.Topaz2;
@@ -213,6 +222,9 @@ public class DialogueSystem : MonoBehaviour
             }
             else if (currBranch == Branch.TopazRes12)
             {
+                soundIter = 4;
+                playSound();
+
                 dialogueIter++;
                 dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes12[dialogueIter]);
                 currBranch = Branch.Topaz2;
@@ -220,6 +232,9 @@ public class DialogueSystem : MonoBehaviour
             }
             else if (currBranch == Branch.TopazRes13)
             {
+                soundIter = 5;
+                playSound();
+
                 dialogueIter++;
                 dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes13[dialogueIter]);
                 currBranch = Branch.Topaz2;
@@ -227,6 +242,12 @@ public class DialogueSystem : MonoBehaviour
             }
             else if (dialogueIter < 7 && currBranch == Branch.Topaz2)
             {
+                if(soundIter < 6)
+                {
+                    soundIter = 6;
+                }
+                playSound();
+                soundIter++;
                 dialogueSystem.addToDisplayLines(dialogueSystem.linesTopaz2[dialogueIter]);
                 dialogueIter++;
             }
@@ -268,11 +289,6 @@ public class DialogueSystem : MonoBehaviour
                 playSoundOnNextLine = false;
             }
             callUpdateSpeakerDisplay();
-            if (playSoundOnNextLine)
-            {
-                soundIter++;
-                playSound();
-            }
         }
 
         public void madeChoice()
@@ -391,6 +407,11 @@ public class DialogueSystem : MonoBehaviour
         public Branch whichBranch()
         {
             return currBranch;
+        }
+
+        public int getSoundIter()
+        {
+            return soundIter;
         }
     }
 }
