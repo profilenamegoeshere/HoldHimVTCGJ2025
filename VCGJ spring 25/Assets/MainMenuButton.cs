@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuButton : MonoBehaviour
 {
-    public void OnEnable()
+    public void Start()
     {
         gameObject.SetActive(false);
     }

@@ -86,9 +86,13 @@ public class DialogueSystem : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip[] audioClips;
 
+    public int whichEnding;
+
     // Start is called before the first frame update
     void Start()
     {
+        whichEnding = 0;
+        
         timer = 0;
         timerLimit = 0;
         ending3Timer = 0;
@@ -125,6 +129,8 @@ public class DialogueSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        whichEnding = dialogueHandler.whichEnding;
+
         timerLimit = 4;
         if (dialogueHandler.whichBranch() == Branch.PreChoice2)
         {
@@ -245,10 +251,12 @@ public class DialogueSystem : MonoBehaviour
             }
         }
 
+        //Debug.Log("ending: " + dialogueHandler.whichEnding);
         if(dialogueHandler.whichEnding != 0)
         {
-            restartButtonGUI.gameObject.SetActive(true);
-            mainMenuButtonGUI.gameObject.SetActive(true);
+            Debug.Log("is it working?: " + dialogueHandler.whichEnding);
+            restartButtonGUI.SetActive(true);
+            mainMenuButtonGUI.SetActive(true);
         }
 
         if(dialogueHandler.whichEnding == 1)
@@ -346,7 +354,7 @@ public class DialogueSystem : MonoBehaviour
         }
     }
 
-    public class DialogueHandler
+    public class DialogueHandler : ScriptableObject
     {
         public DialogueSystem dialogueSystem;
 
@@ -355,6 +363,8 @@ public class DialogueSystem : MonoBehaviour
         public Branch nextBranch = Branch.PreChoice1;
         public Boolean choosing = false;
         public int soundIter = 0;
+
+        [SerializeField]
         public int whichEnding = 0;
 
         public DialogueHandler(DialogueSystem newDialogueSystem)
@@ -431,7 +441,7 @@ public class DialogueSystem : MonoBehaviour
             }
             else if (currBranch == Branch.TopazRes21)
             {
-                if (dialogueIter <= 20)
+                if (dialogueIter <= 20 && whichEnding == 0)
                 {
                     dialogueIter++;
                     dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes21[dialogueIter]);
@@ -457,7 +467,7 @@ public class DialogueSystem : MonoBehaviour
             }
             else if (currBranch == Branch.TopazRes22)
             {
-                if (dialogueIter <= 15)
+                if (dialogueIter <= 15 && whichEnding == 0)
                 {
                     dialogueIter++;
                     dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes22[dialogueIter]);
@@ -481,7 +491,7 @@ public class DialogueSystem : MonoBehaviour
             }
             else if (currBranch == Branch.TopazRes23)
             {
-                if (dialogueIter <= 23)
+                if (dialogueIter <= 23 && whichEnding == 0)
                 {
                     dialogueIter++;
                     dialogueSystem.addToDisplayLines(dialogueSystem.linesTopazRes23[dialogueIter]);

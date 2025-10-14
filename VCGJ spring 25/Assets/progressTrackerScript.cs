@@ -8,10 +8,7 @@ using UnityEngine.SceneManagement;
 public class progressTrackerScript : MonoBehaviour
 {
     public static progressTrackerScript Instance { get; private set; }
-    public bool[] endingsGotten;
-
-    [SerializeField]
-    private TextMeshProUGUI endingsGUI;
+    public Boolean[] endingsGotten;
 
     void Awake()
     {
@@ -41,22 +38,6 @@ public class progressTrackerScript : MonoBehaviour
         } else
         {
             Debug.Log("Tried to award an incorrect ending.");
-        }
-    }
-
-    public void Update()
-    {
-        if(SceneManager.GetActiveScene().name.Equals("Main Menu"))
-        {
-            int numEndings = 0;
-            for (int i = 0; i<3; i++)
-            {
-                if (endingsGotten[i])
-                {
-                    numEndings++;
-                }
-            }
-            endingsGUI.SetText("Endings: "+numEndings.ToString()+"/3");
         }
     }
 }
