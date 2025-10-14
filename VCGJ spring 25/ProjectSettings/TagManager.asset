@@ -41,3 +41,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Walls
+    uniqueID: 940973563
+    locked: 0
+  - name: Table
+    uniqueID: 2154323345
+    locked: 0
+  - name: Topaz
+    uniqueID: 901231167
+    locked: 0
+  - name: UI
+    uniqueID: 3002398835
+    locked: 0

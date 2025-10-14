@@ -58,6 +58,8 @@ public class DialogueSystem : MonoBehaviour
     public TextMeshProUGUI soundIterGUI;
     public TextMeshProUGUI ending3TimerGUI;
     public TextMeshProUGUI endingGUI;
+    public GameObject restartButtonGUI;
+    public GameObject mainMenuButtonGUI;
     public float timer;
     public float timerSpeed;
     public float timerLimit;
@@ -243,18 +245,27 @@ public class DialogueSystem : MonoBehaviour
             }
         }
 
+        if(dialogueHandler.whichEnding != 0)
+        {
+            restartButtonGUI.gameObject.SetActive(true);
+            mainMenuButtonGUI.gameObject.SetActive(true);
+        }
+
         if(dialogueHandler.whichEnding == 1)
         {
             endingGUI.gameObject.SetActive(true);
             endingGUI.SetText("Ending 1/3: Hold Him Tight");
+            progressTrackerScript.Instance.gotAnEnding(1);
         } else if(dialogueHandler.whichEnding == 2)
         {
             endingGUI.gameObject.SetActive(true);
             endingGUI.SetText("Ending 2/3: Him Him Accountable");
-        } else if (dialogueHandler.whichEnding == 2)
+            progressTrackerScript.Instance.gotAnEnding(2);
+        } else if (dialogueHandler.whichEnding == 3)
         {
             endingGUI.gameObject.SetActive(true);
-            endingGUI.SetText("Ending 2/3: Him Him Back");
+            endingGUI.SetText("Ending 3/3: Hold Him Back");
+            progressTrackerScript.Instance.gotAnEnding(3);
         } else
         {
             endingGUI.gameObject.SetActive(false);
