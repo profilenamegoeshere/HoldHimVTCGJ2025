@@ -354,6 +354,11 @@ public class DialogueSystem : MonoBehaviour
         }
     }
 
+    public float getTimer()
+    {
+        return timer;
+    }
+
     public class DialogueHandler : ScriptableObject
     {
         public DialogueSystem dialogueSystem;
