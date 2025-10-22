@@ -359,6 +359,16 @@ public class DialogueSystem : MonoBehaviour
         return timer;
     }
 
+    public int getDialogueIter()
+    {
+        return dialogueHandler.dialogueIter;
+    }
+
+    public Branch getBranch()
+    {
+        return dialogueHandler.whichBranch();
+    }
+
     public class DialogueHandler : ScriptableObject
     {
         public DialogueSystem dialogueSystem;
