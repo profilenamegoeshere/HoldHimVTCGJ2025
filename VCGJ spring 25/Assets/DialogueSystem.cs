@@ -58,8 +58,6 @@ public class DialogueSystem : MonoBehaviour
     public TextMeshProUGUI soundIterGUI;
     public TextMeshProUGUI ending3TimerGUI;
     public TextMeshProUGUI endingGUI;
-    public GameObject restartButtonGUI;
-    public GameObject mainMenuButtonGUI;
     public float timer;
     public float timerSpeed;
     public float timerLimit;
@@ -255,8 +253,6 @@ public class DialogueSystem : MonoBehaviour
         if(dialogueHandler.whichEnding != 0)
         {
             Debug.Log("is it working?: " + dialogueHandler.whichEnding);
-            restartButtonGUI.SetActive(true);
-            mainMenuButtonGUI.SetActive(true);
         }
 
         if(dialogueHandler.whichEnding == 1)
@@ -367,6 +363,11 @@ public class DialogueSystem : MonoBehaviour
     public Branch getBranch()
     {
         return dialogueHandler.whichBranch();
+    }
+
+    public int getWhichEnding()
+    {
+        return dialogueHandler.whichEnding;
     }
 
     public class DialogueHandler : ScriptableObject
