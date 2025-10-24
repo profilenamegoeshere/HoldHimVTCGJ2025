@@ -11,14 +11,11 @@ public enum Branch
 {
     Topaz1,
     Player1,
-    Tutorial,
-    PreChoice1,
     TopazRes11,
     TopazRes12,
     TopazRes13,
     Topaz2,
     Player2,
-    PreChoice2,
     Tutorial2,
     TopazRes21,
     TopazRes22,
@@ -58,6 +55,8 @@ public class DialogueSystem : MonoBehaviour
     public TextMeshProUGUI soundIterGUI;
     public TextMeshProUGUI ending3TimerGUI;
     public TextMeshProUGUI endingGUI;
+    public GameObject dialogueBackground;
+    public GameObject playerDialogueBackground;
     public float timer;
     public float timerSpeed;
     public float timerLimit;
@@ -122,6 +121,8 @@ public class DialogueSystem : MonoBehaviour
         audioClips = Resources.LoadAll<AudioClip>("Sounds/").OrderBy(clip => clip.name).ToArray();
         audioSource.clip = audioClips[0];
         audioSource.Play();
+
+        dialogueTextGUI.rectTransform.position = new Vector2(960f, (-220f+500f));
     }
 
     // Update is called once per frame
@@ -129,28 +130,24 @@ public class DialogueSystem : MonoBehaviour
     {
         whichEnding = dialogueHandler.whichEnding;
 
-        timerLimit = 4;
-        if (dialogueHandler.whichBranch() == Branch.PreChoice2)
-        {
-            timerLimit = 3;
-        }
+        timerLimit = 3;
         if (dialogueHandler.isChoosing())
         {
-            // TODO if less than 1 and let go of space just reset timer and dont choose
-            if(timer<1 && !(Input.GetKey(KeyCode.Space))){
-                timer = 0;
-            } else if (timer < timerLimit && Input.GetKey(KeyCode.Space))
-            {
-                timer += (Time.deltaTime) / (100/timerSpeed);
-                dialogueHandler.checkChoosing(timer);
-            } else if (timer > 1)
+            dialogueTextGUI.rectTransform.position = new Vector2(960f, (100f+500));
+            if (Input.GetKeyDown(KeyCode.Space)|
+               (timer>timerLimit))
             {
                 dialogueHandler.madeChoice();
                 timer = 0;
+            } else if (timer < timerLimit)
+            {
+                timer += (Time.deltaTime*(timerSpeed/100));
+                dialogueHandler.checkChoosing(timer);
             }
         }
         else
         {
+            dialogueTextGUI.rectTransform.position = new Vector2(960f, (-220f + 500));
             if (Input.GetKeyDown(KeyCode.Space)&&ending3CanPlay)
             {
                 dialogueHandler.advanceDialogue();
@@ -168,7 +165,16 @@ public class DialogueSystem : MonoBehaviour
 
     void updateScreen()
     {
-        dialogueTextGUI.SetText(displayLines[displayIter]);
+        if (dialogueHandler.isChoosing())
+        {
+            dialogueBackground.SetActive(false);
+            playerDialogueBackground.SetActive(true);
+        } else
+        {
+            dialogueBackground.SetActive(true);
+            playerDialogueBackground.SetActive(false);
+        }
+            dialogueTextGUI.SetText(displayLines[displayIter]);
         if (dialogueHandler.whichBranch() == Branch.Player2)
         {
             speakerNameGUI.gameObject.SetActive(false);
@@ -376,7 +382,7 @@ public class DialogueSystem : MonoBehaviour
 
         public int dialogueIter = 0;
         public Branch currBranch = Branch.Topaz1;
-        public Branch nextBranch = Branch.PreChoice1;
+        public Branch nextBranch = Branch.Player1;
         public Boolean choosing = false;
         public int soundIter = 0;
 
@@ -390,7 +396,7 @@ public class DialogueSystem : MonoBehaviour
 
         public void advanceDialogue()
         {
-            if(dialogueIter < 3 && currBranch == Branch.Topaz1)
+            if(dialogueIter < 2 && currBranch == Branch.Topaz1)
             {
                 dialogueIter++;
                 dialogueSystem.addToDisplayLines(dialogueSystem.linesTopaz1[dialogueIter]);
@@ -400,7 +406,7 @@ public class DialogueSystem : MonoBehaviour
                     playSound();
                 }
             } 
-            else if (dialogueIter >= 3 && currBranch == Branch.Topaz1)
+            else if (dialogueIter >= 2 && currBranch == Branch.Topaz1)
             {
                 currBranch = Branch.Player1;
                 dialogueSystem.addToDisplayLines(dialogueSystem.linesPlayer1[0]);
@@ -541,7 +547,7 @@ public class DialogueSystem : MonoBehaviour
             currBranch = nextBranch;
             if (nextBranch == Branch.TopazRes11 || nextBranch == Branch.TopazRes12 || nextBranch == Branch.TopazRes13)
             {
-                nextBranch = Branch.PreChoice2;
+                nextBranch = Branch.Player2;
             }
             dialogueIter = -1;
             advanceDialogue();
@@ -553,28 +559,17 @@ public class DialogueSystem : MonoBehaviour
             Debug.Log(nextBranch.ToString());
             if (timer < 1)
             {
-                if (nextBranch == Branch.PreChoice1)
-                {
-                    nextBranch = Branch.Tutorial;
-                    dialogueSystem.addToDisplayLines("Press and hold space to start selecting. Let go of space to choose displayed dialogue choice.");
-                } else if(nextBranch == Branch.PreChoice2)
-                {
-                    nextBranch = Branch.Tutorial2;
-                    dialogueSystem.addToDisplayLines("Press and hold space to choose next dialogue.");
-                }
-            } else if (timer < 2)
-            {
-                if (nextBranch == Branch.Tutorial)
+                if (nextBranch == Branch.Player1)
                 {
                     nextBranch = Branch.TopazRes11;
                     dialogueSystem.addToDisplayLines(dialogueSystem.linesPlayer1[0]);
                 }
-                else if (nextBranch == Branch.Tutorial2)
+                else if (nextBranch == Branch.Player2)
                 {
                     nextBranch = Branch.TopazRes21;
                     dialogueSystem.addToDisplayLines(dialogueSystem.linesPlayer2[0]);
                 }
-            } else if (timer < 3)
+            } else if (timer < 2)
             {
                 if (nextBranch == Branch.TopazRes11)
                 {
