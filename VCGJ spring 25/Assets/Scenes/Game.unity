@@ -1509,7 +1509,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1275734692
 Transform:
   m_ObjectHideFlags: 0
@@ -2478,7 +2478,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 805, y: 170}
+  m_AnchoredPosition: {x: 796, y: 378}
   m_SizeDelta: {x: 238.3137, y: 233.4839}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1786101174
@@ -2745,6 +2745,7 @@ MonoBehaviour:
   ending3Timer: 0
   ending3CanPlay: 0
   ending3Triggers: 
+  canChoose: 0
   linesTopaz1: []
   linesPlayer1: []
   linesTopazRes11: []
@@ -2911,7 +2912,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1976716855
 Transform:
   m_ObjectHideFlags: 0

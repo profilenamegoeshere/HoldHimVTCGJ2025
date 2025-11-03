@@ -63,6 +63,7 @@ public class DialogueSystem : MonoBehaviour
     public float ending3Timer;
     public Boolean ending3CanPlay;
     public Boolean[] ending3Triggers;
+    public Boolean canChoose;
 
     public string[] linesTopaz1;
     public string[] linesPlayer1;
@@ -97,6 +98,7 @@ public class DialogueSystem : MonoBehaviour
         displayLines = new string[80];
         ending3CanPlay = true;
         ending3Triggers = new bool[6];
+        canChoose = false;
         for (int i = 0; i < 80; i++)
         {
             displayLines[i] = " ";
@@ -129,26 +131,36 @@ public class DialogueSystem : MonoBehaviour
     void Update()
     {
         whichEnding = dialogueHandler.whichEnding;
-
         timerLimit = 3;
+        if ((timer > .8 && timer < 1) |
+                (timer > 1.8 && timer < 2) |
+                (timer > 2.8 && timer < 3))
+        {
+            canChoose = false;
+        } else
+        {
+            canChoose = true;
+        }
+
         if (dialogueHandler.isChoosing())
         {
-            dialogueTextGUI.rectTransform.position = new Vector2(960f, (100f+500));
-            if (Input.GetKeyDown(KeyCode.Space)|
-               (timer>timerLimit))
+            dialogueTextGUI.rectTransform.position = new Vector2(960f, (100f + 500));
+            if ((Input.GetKeyDown(KeyCode.Space)|(timer > timerLimit))
+                && canChoose)
             {
                 dialogueHandler.madeChoice();
                 timer = 0;
-            } else if (timer < timerLimit)
+            }
+            else if (timer < timerLimit)
             {
-                timer += (Time.deltaTime*(timerSpeed/100));
+                timer += (Time.deltaTime * (timerSpeed / 100));
                 dialogueHandler.checkChoosing(timer);
             }
         }
         else
         {
             dialogueTextGUI.rectTransform.position = new Vector2(960f, (-220f + 500));
-            if (Input.GetKeyDown(KeyCode.Space)&&ending3CanPlay)
+            if (Input.GetKeyDown(KeyCode.Space) && ending3CanPlay)
             {
                 dialogueHandler.advanceDialogue();
             }
@@ -167,6 +179,17 @@ public class DialogueSystem : MonoBehaviour
     {
         if (dialogueHandler.isChoosing())
         {
+            if(dialogueHandler.whichBranch() == Branch.Player2)
+            {
+                playerDialogueBackground.transform.localScale = new Vector3(20.0f, 2.7f, 1.0f);
+                playerDialogueBackground.transform.localPosition = new Vector2(0f, 1.63f);
+                Debug.Log("Should have switched to the wide");
+            } else
+            {
+                playerDialogueBackground.transform.localScale = new Vector3(16.0f, 1.3f, 1.0f);
+                playerDialogueBackground.transform.localPosition = new Vector2(0f, 2.14f);
+                Debug.Log("Should have switched to the skinny");
+            }
             dialogueBackground.SetActive(false);
             playerDialogueBackground.SetActive(true);
         } else
@@ -193,14 +216,14 @@ public class DialogueSystem : MonoBehaviour
         {
             if(dialogueHandler.dialogueIter == 3)
             {
-                speakerNameGUI.SetText("Tutorial");
+                speakerNameGUI.SetText("");
             } else
             {
                 speakerNameGUI.SetText("Topaz");
             }
         } else if(dialogueHandler.whichBranch() == Branch.Player1)
         {
-            speakerNameGUI.SetText("Tutorial");
+            speakerNameGUI.SetText("");
         }
         else if (dialogueHandler.whichBranch() == Branch.TopazRes21)
         {
@@ -281,8 +304,26 @@ public class DialogueSystem : MonoBehaviour
             endingGUI.gameObject.SetActive(false);
         }
 
-            // debug guis
-            dialogueTimerGUI.SetText(timer.ToString());
+        if (dialogueHandler.isChoosing())
+        {
+            if ((timer > .8 && timer < 1)|
+                (timer > 1.8 && timer < 2))
+            {
+                string newText = "<s>" + dialogueTextGUI.GetComponent<TMP_Text>().text + "</s>";
+                dialogueTextGUI.SetText(newText);
+                Debug.Log("Tried to strikethrough with " + newText);
+            }
+            if (timer > 2.8 && timer < 3)
+            {
+                string newText = "<u>" + dialogueTextGUI.GetComponent<TMP_Text>().text + "</u>";
+                dialogueTextGUI.SetText(newText);
+                Debug.Log("Tried to strikethrough with " + newText);
+            }
+        }
+        
+
+        // debug guis
+        dialogueTimerGUI.SetText(timer.ToString());
         dialogueIterGUI.SetText(dialogueHandler.getIter().ToString());
         branchGUI.SetText(dialogueHandler.whichBranch().ToString());
         displayIterGUI.SetText(displayIter.ToString());
@@ -400,7 +441,7 @@ public class DialogueSystem : MonoBehaviour
             {
                 dialogueIter++;
                 dialogueSystem.addToDisplayLines(dialogueSystem.linesTopaz1[dialogueIter]);
-                if(dialogueIter < 3)
+                if(dialogueIter < 2)
                 {
                     soundIter++;
                     playSound();
@@ -613,7 +654,7 @@ public class DialogueSystem : MonoBehaviour
             else if (currBranch == Branch.Player1 ||
                      currBranch == Branch.Player2)
             {
-                newName = "Topaz";
+                newName = "You";
             }
             else
             {

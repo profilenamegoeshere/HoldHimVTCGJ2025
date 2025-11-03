@@ -5,8 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class PlayButtonScript : MonoBehaviour
 {
+    public FadeOutScript fadeOutScript;
     public void whenClicked()
     {
-        SceneManager.LoadScene("Game");
+        fadeOutScript.fadeOut();
     }
 }
