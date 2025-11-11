@@ -139,6 +139,7 @@ public class DialogueSystem : MonoBehaviour
             canChoose = false;
         } else
         {
+            dialogueTextGUI.color = Color.white;
             canChoose = true;
         }
 
@@ -197,7 +198,7 @@ public class DialogueSystem : MonoBehaviour
             dialogueBackground.SetActive(true);
             playerDialogueBackground.SetActive(false);
         }
-            dialogueTextGUI.SetText(displayLines[displayIter]);
+        dialogueTextGUI.SetText(displayLines[displayIter]);
         if (dialogueHandler.whichBranch() == Branch.Player2)
         {
             speakerNameGUI.gameObject.SetActive(false);
@@ -311,13 +312,13 @@ public class DialogueSystem : MonoBehaviour
             {
                 string newText = "<s>" + dialogueTextGUI.GetComponent<TMP_Text>().text + "</s>";
                 dialogueTextGUI.SetText(newText);
-                Debug.Log("Tried to strikethrough with " + newText);
+                dialogueTextGUI.color = Color.red;
             }
             if (timer > 2.8 && timer < 3)
             {
                 string newText = "<u>" + dialogueTextGUI.GetComponent<TMP_Text>().text + "</u>";
                 dialogueTextGUI.SetText(newText);
-                Debug.Log("Tried to strikethrough with " + newText);
+                dialogueTextGUI.color = Color.green;
             }
         }
         
