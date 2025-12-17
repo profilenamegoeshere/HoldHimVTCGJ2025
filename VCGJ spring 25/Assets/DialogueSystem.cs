@@ -29,20 +29,6 @@ public enum Speakers
     None
 }
 
-/*
- * TODO
- * Add voices lines
- * 
- * Add some images
- * 
- * Add a title screen (I think that would be a different scene?)
- * 
- * Make tutorial better
- * 
- * Then you can fix all the little things that bother you
- */
-
-
 public class DialogueSystem : MonoBehaviour
 {   
     public TextMeshProUGUI dialogueTextGUI;
@@ -55,6 +41,7 @@ public class DialogueSystem : MonoBehaviour
     public TextMeshProUGUI soundIterGUI;
     public TextMeshProUGUI ending3TimerGUI;
     public TextMeshProUGUI endingGUI;
+    public Sprite endingImage;
     public GameObject dialogueBackground;
     public GameObject playerDialogueBackground;
     public float timer;
@@ -287,11 +274,13 @@ public class DialogueSystem : MonoBehaviour
 
         if(dialogueHandler.whichEnding == 1)
         {
+            //endingImage.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Ending 1");
             endingGUI.gameObject.SetActive(true);
             endingGUI.SetText("Ending 1/3: Hold Him Tight");
             progressTrackerScript.Instance.gotAnEnding(1);
         } else if(dialogueHandler.whichEnding == 2)
         {
+            //endingImage.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Ending 2");
             endingGUI.gameObject.SetActive(true);
             endingGUI.SetText("Ending 2/3: Him Him Accountable");
             progressTrackerScript.Instance.gotAnEnding(2);

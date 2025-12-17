@@ -1,7 +1,10 @@
+using Microsoft.Unity.VisualStudio.Editor;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class EndingSpritesManager : MonoBehaviour
 {
@@ -42,12 +45,12 @@ public class EndingSpritesManager : MonoBehaviour
             mainMenuButtonGUI.SetActive(true);
             if (whichEnding == 1)
             {
-                Ending.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Ending 1");
-            } 
-            //else if(whichEnding == 2)
-            //{
-            //    Ending.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Ending 2");
-            //}
+                Ending.GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("Images/Ending 1");
+            }
+            else if (whichEnding == 2)
+            {
+                Ending.GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("Images/Ending 2");
+            }
             //else if (whichEnding == 3)
             //{
             //    Ending.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Ending 3");
