@@ -1,7 +1,7 @@
-using Microsoft.Unity.VisualStudio.Editor;
+//using Microsoft.Unity.VisualStudio.Editor;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+//using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
@@ -35,7 +35,8 @@ public class EndingSpritesManager : MonoBehaviour
     void Update()
     {
         whichEnding = dialogueScript.getWhichEnding();
-        if (whichEnding != 0)
+        if (whichEnding == 1 || whichEnding == 2 || 
+            (whichEnding == 3 && dialogueScript.getDialogueIter() > 21))
         {
             walls.SetActive(false);
             table.SetActive(false);
@@ -51,10 +52,33 @@ public class EndingSpritesManager : MonoBehaviour
             {
                 Ending.GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("Images/Ending 2");
             }
-            //else if (whichEnding == 3)
-            //{
-            //    Ending.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/Ending 3");
-            //}
+        }
+        if (dialogueScript.isEnding3)
+        {
+            if (dialogueScript.getDialogueIter() == 15)
+            {
+                walls.SetActive(false);
+                table.SetActive(false);
+                Topaz.SetActive(false);
+                Ending.SetActive(true);
+                Ending.GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("Images/Ending 3-1");
+            } 
+            else if(dialogueScript.getDialogueIter() == 16)
+            {
+                Ending.GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("Images/Ending 3-2");
+            }
+            else if (dialogueScript.getDialogueIter() == 19)
+            {
+                Ending.GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("Images/Ending 3-3");
+            }
+            else if (dialogueScript.getDialogueIter() == 20)
+            {
+                Ending.GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("Images/Ending 3-4");
+            }
+            else if (dialogueScript.getDialogueIter() == 21)
+            {
+                Ending.GetComponent<UnityEngine.UI.Image>().sprite = Resources.Load<Sprite>("Images/Ending 3-5");
+            }
         }
     }
 }

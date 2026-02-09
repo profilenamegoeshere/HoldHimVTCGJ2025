@@ -72,11 +72,14 @@ public class DialogueSystem : MonoBehaviour
     public AudioClip[] audioClips;
 
     public int whichEnding;
+    public Boolean isEnding3;
+    public int dialogueIter;
 
     // Start is called before the first frame update
     void Start()
     {
         whichEnding = 0;
+        isEnding3 = false;
         
         timer = 0;
         timerLimit = 0;
@@ -111,7 +114,7 @@ public class DialogueSystem : MonoBehaviour
         audioSource.clip = audioClips[0];
         audioSource.Play();
 
-        dialogueTextGUI.rectTransform.position = new Vector2(960f, (-220f+500f));
+        dialogueTextGUI.rectTransform.position = new Vector2(Screen.width / 2, (-220f+500f));
     }
 
     // Update is called once per frame
@@ -132,7 +135,7 @@ public class DialogueSystem : MonoBehaviour
 
         if (dialogueHandler.isChoosing())
         {
-            dialogueTextGUI.rectTransform.position = new Vector2(960f, (100f + 500));
+            dialogueTextGUI.rectTransform.position = new Vector2(dialogueTextGUI.rectTransform.position.x, (Screen.height/100)*60);
             if ((Input.GetKeyDown(KeyCode.Space)|(timer > timerLimit))
                 && canChoose)
             {
@@ -147,7 +150,8 @@ public class DialogueSystem : MonoBehaviour
         }
         else
         {
-            dialogueTextGUI.rectTransform.position = new Vector2(960f, (-220f + 500));
+            dialogueTextGUI.rectTransform.position = new Vector2(dialogueTextGUI.rectTransform.position.x, (Screen.height/100)*25);
+
             if (Input.GetKeyDown(KeyCode.Space) && ending3CanPlay)
             {
                 dialogueHandler.advanceDialogue();
@@ -276,15 +280,15 @@ public class DialogueSystem : MonoBehaviour
         {
             //endingImage.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Ending 1");
             endingGUI.gameObject.SetActive(true);
-            endingGUI.SetText("Ending 1/3: Hold Him Tight");
+            endingGUI.SetText("Ending 1/3: Hold Him Close");
             progressTrackerScript.Instance.gotAnEnding(1);
         } else if(dialogueHandler.whichEnding == 2)
         {
             //endingImage.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Ending 2");
             endingGUI.gameObject.SetActive(true);
-            endingGUI.SetText("Ending 2/3: Him Him Accountable");
+            endingGUI.SetText("Ending 2/3: Hold Him Accountable");
             progressTrackerScript.Instance.gotAnEnding(2);
-        } else if (dialogueHandler.whichEnding == 3)
+        } else if (dialogueHandler.whichEnding == 3 && dialogueHandler.dialogueIter >= 23)
         {
             endingGUI.gameObject.SetActive(true);
             endingGUI.SetText("Ending 3/3: Hold Him Back");
@@ -310,6 +314,13 @@ public class DialogueSystem : MonoBehaviour
                 dialogueTextGUI.color = Color.green;
             }
         }
+
+        if(dialogueHandler.whichBranch() == Branch.TopazRes23)
+        {
+            isEnding3 = true;
+        }
+
+        dialogueIter = dialogueHandler.dialogueIter;
         
 
         // debug guis
@@ -563,7 +574,7 @@ public class DialogueSystem : MonoBehaviour
                         soundIter++;
                     }
                 }
-                if(dialogueIter == 23)
+                if (dialogueIter == 23)
                 {
                     whichEnding = 3;
                 }
